@@ -1,0 +1,39 @@
+﻿<Window x:Class="CalendarioUTFPR.Calendario"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Background="Gray"
+        Icon="pack://application:,,,/Resources/logo_moodle.png"
+        WindowStartupLocation="CenterScreen"
+        Title="Calendario" Height="270" Width="500" WindowStyle="None" Foreground="{x:Null}" AllowsTransparency="True" MouseUp="PnMouseUp" MouseMove="PnMouseMove" MouseDown="PnMouseDown" Closing="Window_Closing">
+    <Grid>
+        <Button Content="_" HorizontalAlignment="Left" Margin="450,0,0,0" VerticalAlignment="Top" Width="25" Height="25" Background="{x:Null}" BorderBrush="#FF3C3C3C" Foreground="White" Click="Button_Click"/>
+        <Button Content="X" HorizontalAlignment="Left" Margin="475,0,0,0" VerticalAlignment="Top" Width="25" Height="25" Background="{x:Null}" BorderBrush="#FF3C3C3C" Foreground="White" Click="Button_Click_1"/>
+        <ListView x:Name="lv" Margin="10,38,254,10" SelectionChanged="lv_SelectionChanged" Background="#FF575757">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <WrapPanel>
+                        <TextBlock Text="Dia: " />
+                        <TextBlock Text="{Binding Dia}" FontWeight="Bold" />
+                    </WrapPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Label Content="Calendário" HorizontalAlignment="Left" Margin="195,-2,0,0" VerticalAlignment="Top" FontWeight="Bold" FontFamily="Do Hyeon" FontSize="24"/>
+        <Label Opacity="0" FontSize="14" x:Name="dia" Content="Dia: " HorizontalAlignment="Left" Margin="411,53,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label Opacity="0" FontSize="14" x:Name="dian" Content="eae" HorizontalAlignment="Left" Margin="450,53,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label Opacity="0" FontSize="14" x:Name="licao" Content="Lições: " HorizontalAlignment="Left" Margin="251,53,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <ListView Opacity="0" IsEnabled="False" x:Name="lv2" Background="Gray" Margin="251,82,13,15" BorderBrush="Black" Foreground="Black">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <WrapPanel>
+                        <TextBlock Text="Tema: " FontWeight="Bold" />
+                        <TextBlock Text="{Binding Tema}" />
+                    </WrapPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Window>
