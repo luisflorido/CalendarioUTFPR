@@ -3,6 +3,7 @@ using CalendarioUTFPR.Request;
 using System;
 using System.Net;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace CalendarioUTFPR
 {
@@ -13,21 +14,78 @@ namespace CalendarioUTFPR
     {
         private bool clicked = false;
         private Point lmAbs = new Point();
+        public static NotifyIcon notify = new NotifyIcon();
+        public bool silent = false;
+        public Calendario cal;
 
-        public MainWindow()
+        public MainWindow(bool silent)
         {
+            this.silent = silent;
             InitializeComponent();
-            startCredential();
+            StartCredential();
+            ShowIcon();
         }
 
-        private void startCredential()
+        private void ShowIcon()
+        {
+            notify.Visible = true;
+            notify.Icon = Properties.Resources.icone;
+            //notify.ShowBalloonTip(2000, "Teste", "Testando", ToolTipIcon.Info);
+            notify.ContextMenu = new ContextMenu();
+            notify.ContextMenu.MenuItems.Add("Abrir");
+            notify.ContextMenu.MenuItems.Add("Deslogar");
+            notify.ContextMenu.MenuItems.Add("Sair");
+            notify.ContextMenu.MenuItems[0].Click += new EventHandler(Open_Click);
+            notify.ContextMenu.MenuItems[1].Click += new EventHandler(Logout_Click);
+            notify.ContextMenu.MenuItems[2].Click += new EventHandler(Close_Click);
+            notify.DoubleClick += new EventHandler(Open_Click);
+        }
+        private void Logout_Click(Object sender, EventArgs args)
+        {
+            CredentialManager.WriteCredential("CalendarioUTFPR", "", "");
+            Environment.Exit(0);
+        }
+
+        private void Open_Click(Object sender, EventArgs args) {
+            if (cal != null)
+            {
+                cal.WindowState = WindowState.Normal;
+                cal.Show();
+            }
+            else
+            {
+                if (this.WindowState == WindowState.Minimized)
+                {
+                    this.WindowState = WindowState.Normal;
+                }
+                this.Show();
+            }
+        }
+        private void Close_Click(Object sender, EventArgs args)
+        {
+            Environment.Exit(0);
+        }
+
+        private void StartCredential()
         {
             var cred = CredentialManager.ReadCredential("CalendarioUTFPR");
 
             if(cred != null && cred.MoodleSession != null && cred.MoodleId != null)
             {
                 this.Hide();
-                new Calendario(cred.MoodleSession, cred.MoodleId).Show();
+                cal = new Calendario(cred.MoodleSession, cred.MoodleId);
+                if (!silent)
+                {
+                    cal.Show();
+                }
+                else
+                {
+                    cal.Hide();
+                }
+            }
+            else
+            {
+                this.Show();
             }
         }
 
@@ -73,35 +131,49 @@ namespace CalendarioUTFPR
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            Logar();
+        }
+
+        private void Logar()
+        {
             string username = user.Text.ToString().Trim();
             string password = pass.Password.ToString().Trim();
-            if(username != "" && password != "")
+            if (username != "" && password != "")
             {
                 HTTPRequest request = new HTTPRequest(username, password);
-                CookieCollection cookie = request.requestToken();
+                CookieCollection cookie = request.RequestToken();
                 if (cookie.Count > 1 && cookie["MoodleSession"] != null && cookie["MOODLEID1_"] != null)
                 {
                     string moodleSession = cookie["MoodleSession"].Value;
                     string moodleid = cookie["MOODLEID1_"].Value;
                     CredentialManager.WriteCredential("CalendarioUTFPR", moodleSession, moodleid);
                     this.Hide();
-                    new Calendario(moodleSession, moodleid).Show();
+                    cal = new Calendario(moodleSession, moodleid);
+                    cal.Show();
                 }
                 else
                 {
-                    new CustomMessage().show("Erro!", "Usuário ou senha incorretos!");
+                    new CustomMessage().Show("Erro!", "Usuário ou senha incorretos!");
                 }
             }
             else
             {
-                new CustomMessage().show("Erro!", "Preencha os campos corretamente!");
+                new CustomMessage().Show("Erro!", "Preencha os campos corretamente!");
             }
         }
 
-        public void expired()
+        public void Expired()
         {
             this.Show();
             CredentialManager.WriteCredential("CalendarioUTFPR", "", "");
+        }
+
+        private void pass_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(e.Key == System.Windows.Input.Key.Enter)
+            {
+                Logar();
+            }
         }
     }
 }

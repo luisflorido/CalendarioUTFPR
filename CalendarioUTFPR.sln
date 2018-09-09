@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarioUTFPR", "CalendarioUTFPR\CalendarioUTFPR.csproj", "{9C01D491-EDB5-43C1-96CD-E1821351EFF9}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Instalador Calendario", "Instalador\Instalador Calendário.vdproj", "{EB2C9BF2-5C31-48A9-B369-A03FEDEB4F4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{9C01D491-EDB5-43C1-96CD-E1821351EFF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C01D491-EDB5-43C1-96CD-E1821351EFF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C01D491-EDB5-43C1-96CD-E1821351EFF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB2C9BF2-5C31-48A9-B369-A03FEDEB4F4E}.Debug|Any CPU.ActiveCfg = Debug
+		{EB2C9BF2-5C31-48A9-B369-A03FEDEB4F4E}.Debug|Any CPU.Build.0 = Debug
+		{EB2C9BF2-5C31-48A9-B369-A03FEDEB4F4E}.Release|Any CPU.ActiveCfg = Release
+		{EB2C9BF2-5C31-48A9-B369-A03FEDEB4F4E}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

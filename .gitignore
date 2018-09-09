@@ -1,3 +1,5 @@
-/CalendarioUTFPR/Bin/
-/CalendarioUTFPR/obj/
-/.vs/
+CalendarioUTFPR/Bin/
+CalendarioUTFPR/obj/
+Instalador/
+.vs/
+.gitignore

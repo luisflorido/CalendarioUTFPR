@@ -40,7 +40,7 @@ namespace CalendarioUTFPR
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            Environment.Exit(0);
+            this.Hide();
         }
 
         private void PnMouseDown(object sender, System.Windows.Input.MouseEventArgs e)
@@ -132,11 +132,11 @@ namespace CalendarioUTFPR
                 }
                 lv.ItemsSource = dias;
             }
-            catch(Exception e)
+            catch (Exception)
             {
                 this.Close();
-                new MainWindow().expired();
-                new CustomMessage().show("Erro!", "Sessão expirada! Logue novamente.");
+                new MainWindow(false).Expired();
+                new CustomMessage().Show("Erro!", "Sessão expirada! Logue novamente.");
             }
         }
 

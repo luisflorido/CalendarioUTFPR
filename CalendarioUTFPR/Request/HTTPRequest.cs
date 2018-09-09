@@ -18,7 +18,7 @@ namespace CalendarioUTFPR.Request
             this.pass = pass;
         }
 
-        public CookieCollection requestToken()
+        public CookieCollection RequestToken()
         {
             NameValueCollection nvc = new NameValueCollection();
             nvc.Add("username", user);

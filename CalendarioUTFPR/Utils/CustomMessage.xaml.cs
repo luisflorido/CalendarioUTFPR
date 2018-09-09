@@ -48,7 +48,7 @@ namespace CalendarioUTFPR
             this.Close();
         }
 
-        public void show(string m1, string m2)
+        public void Show(string m1, string m2)
         {
             this.Title = m1;
             this.msg1.Content = m1;
