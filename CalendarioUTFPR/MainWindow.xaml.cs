@@ -30,7 +30,6 @@ namespace CalendarioUTFPR
         {
             notify.Visible = true;
             notify.Icon = Properties.Resources.icone;
-            //notify.ShowBalloonTip(2000, "Teste", "Testando", ToolTipIcon.Info);
             notify.ContextMenu = new ContextMenu();
             notify.ContextMenu.MenuItems.Add("Abrir");
             notify.ContextMenu.MenuItems.Add("Deslogar");

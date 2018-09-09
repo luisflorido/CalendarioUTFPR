@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace CalendarioUTFPR
 {
@@ -20,6 +21,8 @@ namespace CalendarioUTFPR
         private Point lmAbs = new Point();
 
         public static Dictionary<int, string> licoes;
+        private DispatcherTimer timer;
+        public const string specifiedDate = "19:00:00";
 
         public Calendario(string moodleSession, string moodleId)
         {
@@ -28,6 +31,41 @@ namespace CalendarioUTFPR
             this.moodleId = moodleId;
             IniciarCalendario();
             licoes = new Dictionary<int, string>();
+            BackgroundNotify();
+        }
+
+
+        private void BackgroundNotify()
+        {
+            string[] sDate = specifiedDate.Split(':');
+            DateTime dateNow = DateTime.Now;
+            DateTime date = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, int.Parse(sDate[0]), int.Parse(sDate[1]), int.Parse(sDate[2]));
+            if (dateNow > date)
+                date = date.AddDays(1);
+
+            TimeSpan rest = date - dateNow;
+            timer = new DispatcherTimer();
+            timer.Interval = rest;
+            timer.Tick += VerifyNotifications;
+            timer.Start();
+        }
+
+        private void VerifyNotifications(Object o, EventArgs args)
+        {
+            timer.Stop();
+            Notify();
+        }
+
+        private void Notify()
+        {
+            foreach (KeyValuePair<int, string> licao in licoes)
+            {
+                DateTime atual = DateTime.Now;
+                if (((licao.Key - 1) == atual.Day) || (licao.Key == atual.Day))
+                {
+                    MainWindow.notify.ShowBalloonTip(4000, "Lição para "+(licao.Key == atual.Day ? "hoje" : "amanhã")+" dia " + licao.Key, licao.Value, System.Windows.Forms.ToolTipIcon.Info);
+                }
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -131,6 +169,7 @@ namespace CalendarioUTFPR
                     dias.Add(new Day() { Dia = licao.Key, Licao = licao.Value });
                 }
                 lv.ItemsSource = dias;
+                Notify();
             }
             catch (Exception)
             {
