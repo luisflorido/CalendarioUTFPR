@@ -101,6 +101,7 @@
     <Compile Include="Credentials\CredentialManager.cs" />
     <Compile Include="Request\HTTPRequest.cs" />
     <Compile Include="Structs\Licao.cs" />
+    <Compile Include="Structs\Materia.cs" />
     <Compile Include="Utils\CustomMessage.xaml.cs">
       <DependentUpon>CustomMessage.xaml</DependentUpon>
     </Compile>

@@ -182,8 +182,8 @@ namespace CalendarioUTFPR.Credentials
     public class Credential
     {
         private readonly string _applicationName;
-        private readonly string _moodleSession;
-        private readonly string _moodleId;
+        private readonly string _username;
+        private readonly string _password;
         private readonly CredentialType _credentialType;
 
         public CredentialType CredentialType
@@ -196,27 +196,27 @@ namespace CalendarioUTFPR.Credentials
             get { return _applicationName; }
         }
 
-        public string MoodleSession
+        public string Username
         {
-            get { return _moodleSession; }
+            get { return _username; }
         }
 
-        public string MoodleId
+        public string Password
         {
-            get { return _moodleId; }
+            get { return _password; }
         }
 
-        public Credential(CredentialType credentialType, string applicationName, string moodleSession, string moodleId)
+        public Credential(CredentialType credentialType, string applicationName, string username, string password)
         {
             _applicationName = applicationName;
-            _moodleSession = moodleSession;
-            _moodleId = moodleId;
+            _username = username;
+            _password = password;
             _credentialType = credentialType;
         }
 
         public override string ToString()
         {
-            return string.Format("CredentialType: {0}, ApplicationName: {1}, MoodleSession: {2}, MoodleId: {3}", CredentialType, ApplicationName, _moodleSession, _moodleId);
+            return string.Format("CredentialType: {0}, ApplicationName: {1}, Username: {2}, Password: {3}", CredentialType, ApplicationName, _username, _password);
         }
     }
 }

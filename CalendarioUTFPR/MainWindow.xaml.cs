@@ -1,6 +1,7 @@
 ﻿using CalendarioUTFPR.Credentials;
 using CalendarioUTFPR.Request;
 using System;
+using System.IO;
 using System.Net;
 using System.Windows;
 using System.Windows.Forms;
@@ -69,10 +70,11 @@ namespace CalendarioUTFPR
         {
             var cred = CredentialManager.ReadCredential("CalendarioUTFPR");
 
-            if(cred != null && cred.MoodleSession != null && cred.MoodleId != null)
+            if(cred != null && cred.Username != null && cred.Password != null)
             {
                 this.Hide();
-                cal = new Calendario(cred.MoodleSession, cred.MoodleId);
+                this.Logar(cred.Username, cred.Password);
+                //cal = new Calendario(cred.MoodleSession, cred.MoodleId);
                 if (!silent)
                 {
                     cal.Show();
@@ -145,9 +147,10 @@ namespace CalendarioUTFPR
                 {
                     string moodleSession = cookie["MoodleSession"].Value;
                     string moodleid = cookie["MOODLEID1_"].Value;
-                    CredentialManager.WriteCredential("CalendarioUTFPR", moodleSession, moodleid);
+                    CredentialManager.WriteCredential("CalendarioUTFPR", username, password);
+                    //NECESSITA ENCRIPTAR
                     this.Hide();
-                    cal = new Calendario(moodleSession, moodleid);
+                    cal = new Calendario(username.Replace("a", ""), password, moodleSession, moodleid);
                     cal.Show();
                 }
                 else
@@ -158,6 +161,25 @@ namespace CalendarioUTFPR
             else
             {
                 new CustomMessage().Show("Erro!", "Preencha os campos corretamente!");
+            }
+        }
+
+        private void Logar(string username, string password)
+        {
+            HTTPRequest request = new HTTPRequest(username, password);
+            CookieCollection cookie = request.RequestToken();
+            if (cookie.Count > 1 && cookie["MoodleSession"] != null && cookie["MOODLEID1_"] != null)
+            {
+                string moodleSession = cookie["MoodleSession"].Value;
+                string moodleid = cookie["MOODLEID1_"].Value;
+                CredentialManager.WriteCredential("CalendarioUTFPR", username, password);
+                this.Hide();
+                cal = new Calendario(username.Replace("a", ""), password, moodleSession, moodleid);
+                cal.Show();
+            }
+            else
+            {
+                new CustomMessage().Show("Erro!", "Usuário ou senha incorretos!");
             }
         }
 

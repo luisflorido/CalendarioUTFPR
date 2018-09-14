@@ -2,6 +2,7 @@
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -21,15 +22,21 @@ namespace CalendarioUTFPR
         private Point lmAbs = new Point();
 
         public static Dictionary<int, string> licoes;
+        public List<Materia> materias;
         private DispatcherTimer timer;
+        private string username, password;
         public const string specifiedDate = "19:00:00";
 
-        public Calendario(string moodleSession, string moodleId)
+        public Calendario(string username, string password, string moodleSession, string moodleId)
         {
+            this.username = username;
+            this.password = password;
             InitializeComponent();
+            materias = new List<Materia>();
             this.moodleSession = moodleSession;
             this.moodleId = moodleId;
             IniciarCalendario();
+            IniciarPortalAluno();
             licoes = new Dictionary<int, string>();
             BackgroundNotify();
         }
@@ -61,7 +68,7 @@ namespace CalendarioUTFPR
             foreach (KeyValuePair<int, string> licao in licoes)
             {
                 DateTime atual = DateTime.Now;
-                if (((licao.Key - 1) == atual.Day) || (licao.Key == atual.Day))
+                if ((((licao.Key - 1) == atual.Day) || (licao.Key == atual.Day)) && (licao.Value != "Nenhum evento."))
                 {
                     MainWindow.notify.ShowBalloonTip(4000, "Lição para "+(licao.Key == atual.Day ? "hoje" : "amanhã")+" dia " + licao.Key, licao.Value, System.Windows.Forms.ToolTipIcon.Info);
                 }
@@ -114,8 +121,45 @@ namespace CalendarioUTFPR
             client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(StringDownloaded);
             client.DownloadStringAsync(new Uri("http://moodle.utfpr.edu.br/"));
         }
+        private void IniciarPortalAluno()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+            WebClient client = new WebClient();
+            String encoded = Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(this.username + ":" + this.password));
+     
+            client.Headers.Add("Authorization", "Basic " + encoded);
+            client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(StringDownloadedPA);
+            client.DownloadStringAsync(new Uri("https://utfws.utfpr.edu.br/aluno02/sistema/mpmenu.inicio"));
+        }
 
-        private void StringDownloaded(object sender, DownloadStringCompletedEventArgs args)
+        private void LoadMaterias(object cursoCodigo, object alcuordemnr)
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+            WebClient client = new WebClient();
+            String encoded = Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(this.username + ":" + this.password));
+
+            client.Headers.Add("Authorization", "Basic " + encoded);
+            client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(StringDownloadedMA);
+            client.DownloadStringAsync(new Uri("https://utfws.utfpr.edu.br/aluno02/sistema/mpconfirmacaomatricula.pcTelaAluno?p_pesscodnr="+(username.ToString().Substring(0, username.ToString().Length - 1))+"&p_curscodnr="+cursoCodigo+"&p_alcuordemnr="+alcuordemnr));
+        }
+
+        private void LoadPlanejamentos(List<Materia> materias)
+        {
+            string url = "";
+            foreach(Materia m in materias)
+            {
+                url = "https://utfws.utfpr.edu.br/aluno02/sistema/mpPlanejamentoAula.pcPlanejFinalizado?p_turmidvc="+m.Codigo+"&p_print=0";
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+                WebClient client = new WebClient();
+                String encoded = Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(this.username + ":" + this.password));
+
+                client.Headers.Add("Authorization", "Basic " + encoded);
+                client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(StringDownloadedPlanejamento);
+                client.DownloadStringAsync(new Uri(url));
+            }
+        }
+
+        private void StringDownloadedPlanejamento(object sender, DownloadStringCompletedEventArgs args)
         {
             try
             {
@@ -124,7 +168,98 @@ namespace CalendarioUTFPR
                 var doc = new HtmlDocument();
                 doc.LoadHtml(result);
 
-                var body = doc.GetElementbyId("inst3").OuterHtml;
+                var itens = doc.DocumentNode.SelectNodes("//tbody//tr//td");
+                var count = 0;
+
+                foreach(var item in itens)
+                {
+                    Regex rgx = new Regex(@"(Avaliação [0-9]|Prova [0-9])");
+                    if (rgx.Match(item.InnerHtml).Success)
+                    {
+                        string data = itens[count - 4].InnerHtml;
+                        int diaAtual = DateTime.Now.Day;
+                        int diaProva = int.Parse(data.Split('/')[0]);
+                        int mesProva = int.Parse(data.Split('/')[1]);
+                        if(DateTime.Now.Month == mesProva)
+                        {
+                            string materiaNome = "\nPROVA";
+                            List<Day> licoes = new List<Day>();
+                            foreach(var licao in lv.ItemsSource as List<Day>)
+                            {
+                                if(licao.Dia == diaProva)
+                                    licoes.Add(new Day() { Dia = diaProva, Licao = materiaNome });
+                                else
+                                    licoes.Add(licao);
+                            }
+                            lv.ItemsSource = licoes;
+                            if (diaAtual == diaProva || (diaAtual + 1 == diaProva))
+                                MainWindow.notify.ShowBalloonTip(4000, "Prova", "Prova "+(diaAtual == diaProva ? "hoje" : "amanhã")+" dia "+diaProva+"/"+ mesProva, System.Windows.Forms.ToolTipIcon.Info);
+                        }
+                    }
+                    count++;
+                }
+            }
+            catch(Exception e)
+            {
+                new CustomMessage().Show("Erro!", "Erro ao obter planejamento de aulas.");
+                File.WriteAllText("error.txt", e.Message);
+            }
+        }
+
+        private void StringDownloadedMA(object sender, DownloadStringCompletedEventArgs args)
+        {
+            try
+            {
+                string result = args.Result;
+
+                var doc = new HtmlDocument();
+                doc.LoadHtml(result);
+
+                var itens = doc.DocumentNode.SelectNodes("//tr[@class='imprime']//td");
+                var count = 0;
+                foreach(var item in itens)
+                {
+                    if (item.InnerHtml.Contains("fcImprimirPA(")){
+                        Regex rgxCodigo = new Regex(@"\'[^()]*\'");
+                        string codigo = rgxCodigo.Match(item.InnerHtml).Value;
+                        materias.Add(new Materia { Nome = itens[count - 3].InnerHtml, Codigo = codigo.Replace("'", "") });
+                    }
+                    count++;
+                }
+                LoadPlanejamentos(materias);
+            }
+            catch (Exception)
+            {
+                new CustomMessage().Show("Erro!", "Erro ao obter matérias.");
+            }
+        }
+
+        private void StringDownloadedPA(object sender, DownloadStringCompletedEventArgs args)
+         {
+            try {
+                string result = args.Result;
+
+                Regex rgx = new Regex(@"curscodnr: [\d]+");
+                Regex rgxAlcu = new Regex(@"alcuordemnr: [\d]+");
+                var cursoCodigo = new Regex(@"[\d]+").Match(rgx.Match(result).Value).Value;
+                var alcuordemnr = new Regex(@"[\d]+").Match(rgxAlcu.Match(result).Value).Value;
+
+                LoadMaterias(cursoCodigo, alcuordemnr);
+            }
+            catch (Exception)
+            {
+                new CustomMessage().Show("Erro!", "Erro ao entrar no Portal do Aluno.");
+            }
+        }
+
+        private void StringDownloaded(object sender, DownloadStringCompletedEventArgs args)
+         {
+            try
+            {
+                string result = args.Result;
+
+                var doc = new HtmlDocument();
+                doc.LoadHtml(result);
 
                 var days = doc.DocumentNode.SelectNodes("//*[contains(@class, 'day')]");
                 string s = "";
