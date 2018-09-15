@@ -73,12 +73,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Enums\Campus.cs" />
+    <Compile Include="Enums\CampusAttr.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Structs\Day.cs" />
+    <Compile Include="Utils\URLS.cs" />
     <Page Include="Calendario.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

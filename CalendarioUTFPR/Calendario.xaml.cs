@@ -1,4 +1,6 @@
-﻿using CalendarioUTFPR.Structs;
+﻿using CalendarioUTFPR.Enums;
+using CalendarioUTFPR.Structs;
+using CalendarioUTFPR.Utils;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -17,7 +19,7 @@ namespace CalendarioUTFPR
     /// </summary>
     public partial class Calendario : Window
     {
-        string moodleSession, moodleId;
+        private string moodleSession, moodleId, campus;
         private bool clicked = false;
         private Point lmAbs = new Point();
 
@@ -27,10 +29,12 @@ namespace CalendarioUTFPR
         private string username, password;
         public const string specifiedDate = "19:00:00";
 
-        public Calendario(string username, string password, string moodleSession, string moodleId)
+        public Calendario(string username, string password, string moodleSession, string moodleId, string campus)
         {
             this.username = username;
             this.password = password;
+            this.campus = campus;
+
             InitializeComponent();
             materias = new List<Materia>();
             this.moodleSession = moodleSession;
@@ -40,7 +44,6 @@ namespace CalendarioUTFPR
             licoes = new Dictionary<int, string>();
             BackgroundNotify();
         }
-
 
         private void BackgroundNotify()
         {
@@ -119,7 +122,7 @@ namespace CalendarioUTFPR
             client.Encoding = ASCIIEncoding.UTF8;
             client.Headers.Add(HttpRequestHeader.Cookie, "MoodleSession="+this.moodleSession+";"+"MOODLEID1_="+this.moodleId);
             client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(StringDownloaded);
-            client.DownloadStringAsync(new Uri("http://moodle.utfpr.edu.br/"));
+            client.DownloadStringAsync(new Uri(URLS.MOODLE));
         }
         private void IniciarPortalAluno()
         {
@@ -129,7 +132,7 @@ namespace CalendarioUTFPR
      
             client.Headers.Add("Authorization", "Basic " + encoded);
             client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(StringDownloadedPA);
-            client.DownloadStringAsync(new Uri("https://utfws.utfpr.edu.br/aluno02/sistema/mpmenu.inicio"));
+            client.DownloadStringAsync(new Uri(URLS.PORTAL_INICIO(this.campus)));
         }
 
         private void LoadMaterias(object cursoCodigo, object alcuordemnr)
@@ -140,7 +143,7 @@ namespace CalendarioUTFPR
 
             client.Headers.Add("Authorization", "Basic " + encoded);
             client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(StringDownloadedMA);
-            client.DownloadStringAsync(new Uri("https://utfws.utfpr.edu.br/aluno02/sistema/mpconfirmacaomatricula.pcTelaAluno?p_pesscodnr="+(username.ToString().Substring(0, username.ToString().Length - 1))+"&p_curscodnr="+cursoCodigo+"&p_alcuordemnr="+alcuordemnr));
+            client.DownloadStringAsync(new Uri(URLS.PORTAL_MATERIAS(this.campus, username.ToString().Substring(0, username.ToString().Length - 1), (string)cursoCodigo, (string)alcuordemnr)));
         }
 
         private void LoadPlanejamentos(List<Materia> materias)
@@ -148,7 +151,7 @@ namespace CalendarioUTFPR
             string url = "";
             foreach(Materia m in materias)
             {
-                url = "https://utfws.utfpr.edu.br/aluno02/sistema/mpPlanejamentoAula.pcPlanejFinalizado?p_turmidvc="+m.Codigo+"&p_print=0";
+                url = URLS.PORTAL_PLANEJAMENTO(m.Codigo);
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
                 WebClient client = new WebClient();
                 String encoded = Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(this.username + ":" + this.password));
@@ -249,6 +252,7 @@ namespace CalendarioUTFPR
             catch (Exception)
             {
                 new CustomMessage().Show("Erro!", "Erro ao entrar no Portal do Aluno.");
+                App.mw.Expired();
             }
         }
 
@@ -337,21 +341,17 @@ namespace CalendarioUTFPR
 
         private static string HtmlToPlainText(string html)
         {
-            const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<";//matches one or more (white space or line breaks) between '>' and '<'
-            const string stripFormatting = @"<[^>]*(>|$)";//match any character between '<' and '>', even when end tag is missing
-            const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>";//matches: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
+            const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<";
+            const string stripFormatting = @"<[^>]*(>|$)";
+            const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>";
             var lineBreakRegex = new Regex(lineBreak, RegexOptions.Multiline);
             var stripFormattingRegex = new Regex(stripFormatting, RegexOptions.Multiline);
             var tagWhiteSpaceRegex = new Regex(tagWhiteSpace, RegexOptions.Multiline);
 
             var text = html;
-            //Decode html specific characters
-            text = System.Net.WebUtility.HtmlDecode(text);
-            //Remove tag whitespace/line breaks
+            text = WebUtility.HtmlDecode(text);
             text = tagWhiteSpaceRegex.Replace(text, "><");
-            //Replace <br /> with line breaks
             text = lineBreakRegex.Replace(text, Environment.NewLine);
-            //Strip formatting
             text = stripFormattingRegex.Replace(text, string.Empty);
 
             return text;

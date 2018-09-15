@@ -8,6 +8,9 @@ namespace CalendarioUTFPR
     /// </summary>
     public partial class App : Application
     {
+
+        public static MainWindow mw;
+
         private void App_Startup(object sender, StartupEventArgs e)
         {
             StartupRegistry();
@@ -19,7 +22,7 @@ namespace CalendarioUTFPR
                     minimized = true;
             }
 
-            MainWindow mw = new MainWindow(minimized);
+            mw = new MainWindow(minimized);
             if (minimized)
             {
                 mw.WindowState = WindowState.Minimized;

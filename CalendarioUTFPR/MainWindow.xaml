@@ -8,15 +8,31 @@
         mc:Ignorable="d"
         Icon="pack://application:,,,/Resources/logo_moodle.png"
         WindowStartupLocation="CenterScreen"
-        Title="Calendario" Height="350" Width="525" WindowStyle="None" Foreground="{x:Null}" AllowsTransparency="True" MouseUp="PnMouseUp" MouseMove="PnMouseMove" MouseDown="PnMouseDown">
+        Title="Calendario" Height="380" Width="525" WindowStyle="None" Foreground="{x:Null}" AllowsTransparency="True" MouseUp="PnMouseUp" MouseMove="PnMouseMove" MouseDown="PnMouseDown">
     <Grid>
         <Image Height="100" Margin="0,50,0,0" VerticalAlignment="Top" Source="pack://application:,,,/Resources/utfpr-banner.png" />
         <Label Content="Usuario:" HorizontalAlignment="Left" Margin="125,190,0,0" VerticalAlignment="Top" FontFamily="Do Hyeon" FontSize="24"/>
         <Label Content="Senha:" HorizontalAlignment="Left" Margin="125,220,0,0" VerticalAlignment="Top" FontFamily="Do Hyeon" FontSize="24"/>
-        <TextBox x:Name="user" HorizontalAlignment="Left" Height="20" Margin="228,201,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Background="{x:Null}" BorderBrush="Black"/>
-        <PasswordBox x:Name="pass" HorizontalAlignment="Left" PasswordChar="*" Width="120" Margin="228,231,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="#FF212121" KeyDown="pass_KeyDown"/>
-        <Button Content="Entrar" HorizontalAlignment="Left" Margin="228,277,0,0" VerticalAlignment="Top" Width="120" Height="29" Background="{x:Null}" Foreground="Black" FontSize="14" FontWeight="Bold" BorderBrush="Black" Click="Button_Click_2"/>
+        <TextBox x:Name="user" HorizontalAlignment="Left" Height="20" Margin="228,200,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Background="{x:Null}" BorderBrush="Black"/>
+        <PasswordBox x:Name="pass" HorizontalAlignment="Left" PasswordChar="*" Width="120" Margin="228,230,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="#FF212121" KeyDown="pass_KeyDown"/>
+        <Button Content="Entrar" HorizontalAlignment="Left" Margin="228,310,0,0" VerticalAlignment="Top" Width="120" Height="29" Background="{x:Null}" Foreground="Black" FontSize="14" FontWeight="Bold" BorderBrush="Black" Click="Button_Click_2"/>
         <Button Content="_" HorizontalAlignment="Left" Margin="475,0,0,0" VerticalAlignment="Top" Width="25" Height="25" Background="{x:Null}" BorderBrush="#FF3C3C3C" Foreground="White" Click="Button_Click"/>
         <Button Content="X" HorizontalAlignment="Left" Margin="500,0,0,0" VerticalAlignment="Top" Width="25" Height="25" Background="{x:Null}" BorderBrush="#FF3C3C3C" Foreground="White" Click="Button_Click_1"/>
+        <ComboBox Name="cb" HorizontalAlignment="Left" Margin="228,260,0,0" VerticalAlignment="Top" Width="120" Background="{x:Null}" BorderBrush="{x:Null}">
+            <ComboBoxItem Name="APUCARANA" Content="Apucarana" />
+            <ComboBoxItem Name="CAMPOMOURAO" Content="Campo Mourão" />
+            <ComboBoxItem Name="CORNELIOPROCOPIO" Content="Cornélio Procópio" />
+            <ComboBoxItem Name="CURITIBA" Content="Curitiba" />
+            <ComboBoxItem Name="DOISVIZINHOS" Content="Dois Vizinhos" />
+            <ComboBoxItem Name="FRANCISCOBELTRAO" Content="Francisco Beltrão" />
+            <ComboBoxItem Name="GUARAPUAVA" Content="Guarapuava" />
+            <ComboBoxItem Name="LONDRINA" Content="Londrina" />
+            <ComboBoxItem Name="MEDIANEIRA" Content="Medianeira" />
+            <ComboBoxItem Name="PATOBRANCO" Content="Pato Branco" />
+            <ComboBoxItem Name="PONTAGROSSA" Content="Ponta Grossa" />
+            <ComboBoxItem Name="SANTAHELENA" Content="Santa Helena" />
+            <ComboBoxItem Name="TOLEDO" Content="Toledo" />
+        </ComboBox>
+        <Label Content="Campus:" HorizontalAlignment="Left" Margin="125,250,0,0" VerticalAlignment="Top" FontFamily="Do Hyeon" FontSize="24"/>
     </Grid>
 </Window>

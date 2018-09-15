@@ -1,7 +1,8 @@
 ﻿using CalendarioUTFPR.Credentials;
+using CalendarioUTFPR.Enums;
 using CalendarioUTFPR.Request;
 using System;
-using System.IO;
+using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Forms;
@@ -73,7 +74,9 @@ namespace CalendarioUTFPR
             if(cred != null && cred.Username != null && cred.Password != null)
             {
                 this.Hide();
-                this.Logar(cred.Username, cred.Password);
+                var username = cred.Username.Split('|')[0];
+                var campus = cred.Username.Split('|')[1];
+                this.Logar(username, cred.Password, campus);
                 //cal = new Calendario(cred.MoodleSession, cred.MoodleId);
                 if (!silent)
                 {
@@ -139,18 +142,21 @@ namespace CalendarioUTFPR
         {
             string username = user.Text.ToString().Trim();
             string password = pass.Password.ToString().Trim();
-            if (username != "" && password != "")
+            string campus = cb.SelectedValue != null ? ((System.Windows.Controls.ComboBoxItem)cb.SelectedValue).Name : "";
+
+            if (username != "" && password != "" && campus != "")
             {
+                campus = GetPortalCodigo(campus);
+
                 HTTPRequest request = new HTTPRequest(username, password);
                 CookieCollection cookie = request.RequestToken();
                 if (cookie.Count > 1 && cookie["MoodleSession"] != null && cookie["MOODLEID1_"] != null)
                 {
                     string moodleSession = cookie["MoodleSession"].Value;
                     string moodleid = cookie["MOODLEID1_"].Value;
-                    CredentialManager.WriteCredential("CalendarioUTFPR", username, password);
-                    //NECESSITA ENCRIPTAR
+                    CredentialManager.WriteCredential("CalendarioUTFPR", username+"|"+campus, password);
                     this.Hide();
-                    cal = new Calendario(username.Replace("a", ""), password, moodleSession, moodleid);
+                    cal = new Calendario(username.Replace("a", ""), password, moodleSession, moodleid, campus);
                     cal.Show();
                 }
                 else
@@ -164,7 +170,7 @@ namespace CalendarioUTFPR
             }
         }
 
-        private void Logar(string username, string password)
+        private void Logar(string username, string password, string campus)
         {
             HTTPRequest request = new HTTPRequest(username, password);
             CookieCollection cookie = request.RequestToken();
@@ -172,9 +178,9 @@ namespace CalendarioUTFPR
             {
                 string moodleSession = cookie["MoodleSession"].Value;
                 string moodleid = cookie["MOODLEID1_"].Value;
-                CredentialManager.WriteCredential("CalendarioUTFPR", username, password);
+                CredentialManager.WriteCredential("CalendarioUTFPR", username+"|"+campus, password);
                 this.Hide();
-                cal = new Calendario(username.Replace("a", ""), password, moodleSession, moodleid);
+                cal = new Calendario(username.Replace("a", ""), password, moodleSession, moodleid, campus);
                 cal.Show();
             }
             else
@@ -195,6 +201,30 @@ namespace CalendarioUTFPR
             {
                 Logar();
             }
+        }
+        public string GetPortalCodigo(string campus)
+        {
+            foreach (object obj in Enum.GetValues(typeof(Campus)))
+            {
+                if (obj.ToString().Equals(campus))
+                {
+                    Campus cp = (Campus)Enum.Parse(typeof(Campus), campus);
+
+                    return GetAttribute<CampusAttr>(cp).PortalCodigo;
+                }
+            }
+            return null;
+        }
+
+        private TAttribute GetAttribute<TAttribute>(Enum value)
+        where TAttribute : Attribute
+        {
+            var type = value.GetType();
+            var name = Enum.GetName(type, value);
+            return type.GetField(name)
+                .GetCustomAttributes(false)
+                .OfType<TAttribute>()
+                .SingleOrDefault();
         }
     }
 }
