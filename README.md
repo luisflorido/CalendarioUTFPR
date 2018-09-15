@@ -5,12 +5,25 @@ Fique a vontade para enviar sugestões ou partes de código, não sou um especia
 
 ## Sumário
 
+* [Screenshots](#screenshots)
 * [Login](#login)
 * [Lições](#lições)
 * [Provas](#provas)
 * [Verificação](#verificações)
 * [TO-DO](#to-do)
 * [Instalação](#instalação)
+
+## Screenshots
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/luisflorido/CalendarioUTFPR/master/Screenshots/tela_01.png"/>
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/luisflorido/CalendarioUTFPR/master/Screenshots/tela_02.png"/>
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/luisflorido/CalendarioUTFPR/master/Screenshots/tela_notify.png"/>
+</p>
 
 ## Login
 
