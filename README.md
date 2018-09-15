@@ -1,4 +1,4 @@
-# CalendarioUTFPR (v1.2.0)
+# CalendarioUTFPR (v1.2.1)
 
 Este projeto foi feito para automatizar a visualização do mês com suas respectivas lições que tenha.
 Fique a vontade para enviar sugestões ou partes de código, não sou um especialista em C# e sou aberto a qualquer tipo de ajuda.
@@ -41,13 +41,14 @@ As verificações são feitas diariamentes as 19:00 (em breve configurável) e s
 * ~Notificação de lição com X dia(s) antes~
 * ~Verificação diária~
 * ~Aviso de provas (Integração com o portal)~
+* ~Suporte a todos os campus~
+* Possibilidade de entrar somente no campus correto
 * Horário configurável da verificação
 * Tooltip customizável
 * Indicar o nome da matéria da prova
-* Suporte a todos os campus
 
 ## Instalação
 
-O [instalador do programa](https://github.com/luisflorido/CalendarioUTFPR/releases/download/1.2.0/Instalador.zip) foi adicionado, para quem não tem o interesse de baixar o projeto todo basta instalar e usar, ele inicia automaticamente com o windows, em background.
+O [instalador do programa](https://github.com/luisflorido/CalendarioUTFPR/releases/download/1.2.1/Instalador.zip) foi adicionado, para quem não tem o interesse de baixar o projeto todo basta instalar e usar, ele inicia automaticamente com o windows, em background.
 
 ***Não possuo quaisquer relações com a entidade UTFPR, o projeto não tem objetivo de afetar a universidade.***
